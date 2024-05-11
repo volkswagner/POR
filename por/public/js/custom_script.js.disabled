@@ -1,0 +1,17 @@
+frappe.ui.form.on('Sales Invoice Item', {
+    custom_date_out: function(frm, cdt, cdn) {
+        updateAmount(frm, cdt, cdn);
+    },
+    custom_date_returned: function(frm, cdt, cdn) {
+        updateAmount(frm, cdt, cdn);
+    }
+});
+
+function updateAmount(frm, cdt, cdn) {
+    var item = locals[cdt][cdn];
+    if (item.custom_date_out && item.custom_date_returned) {
+        var days = frappe.datetime.get_day_diff(item.custom_date_returned, item.custom_date_out);
+        var new_amount = flt(item.rate) * days;
+        frappe.model.set_value(cdt, cdn, 'amount', new_amount);
+    }
+}

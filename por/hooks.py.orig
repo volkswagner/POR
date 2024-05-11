@@ -124,26 +124,6 @@ app_license = "MIT"
 # 	}
 # }
 
-doc_events = {
-    "Sales Invoice": {
-        "validate": "por.por.custom_methods.custom_methods.calculate_rate_and_uom",
-        "on_update_after_submit": "por.por.custom_methods.custom_methods.calculate_rate_and_uom"
-    },
-
-    "POR Settings": {
-        "validate": "por.por.doctype.por_settings.por_settings.calculate_daily_divisor"
-    }
-}
-
-fixtures = [
-    {
-        "dt":"Custom Field",
-        "filters": [
-            ["module", "=", "POR"]
-        ]
-    }
-]
-
 # Scheduled Tasks
 # ---------------
 

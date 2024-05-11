@@ -1,0 +1,9 @@
+# in apps/por/por/custom_methods/custom_methods.py
+import frappe
+from frappe.model.document import Document
+
+def custom_sales_invoice_validate(doc, method):
+    for item in doc.items:
+        if item.service_start_date and item.service_end_date:
+            days = (item.service_end_date - item.service_start_date).days
+            item.amount = float(item.rate) * days

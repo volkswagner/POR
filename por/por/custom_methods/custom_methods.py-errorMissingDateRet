@@ -1,0 +1,50 @@
+import frappe
+from frappe.utils import time_diff_in_hours
+from datetime import datetime
+
+def get_por_settings():
+    settings = frappe.get_single('POR Settings')
+    if settings:
+        return settings
+    else:
+        frappe.throw('POR Settings not found. Please configure them in the POR Settings doctype.')
+
+def calculate_rate_and_uom(item_code, custom_date_out, custom_date_returned):
+    
+    # Fetch settings
+    settings = get_por_settings()
+
+    # Convert string dates to datetime objects and calculate duration in hours
+    custom_date_out = datetime.strptime(custom_date_out, '%Y-%m-%d %H:%M:%S')
+    custom_date_returned = datetime.strptime(custom_date_returned, '%Y-%m-%d %H:%M:%S')
+    duration = time_diff_in_hours(custom_date_returned, custom_date_out)
+
+    # Fetch item price rates based on UOM and continue with the existing logic
+    rates = {
+        "4hr": frappe.get_value("Item Price", {"item_code": item_code, "uom": "4hr"}, "price_list_rate"),
+        "Daily": frappe.get_value("Item Price", {"item_code": item_code, "uom": "Daily"}, "price_list_rate"),
+        "Weekly": frappe.get_value("Item Price", {"item_code": item_code, "uom": "Weekly"}, "price_list_rate"),
+        "4Week": frappe.get_value("Item Price", {"item_code": item_code, "uom": "4Week"}, "price_list_rate")
+    }
+
+    # Determine UOM and calculate the rate based on duration
+    if duration <= (4 + settings.four_hr_grace):
+        uom = "4hr"
+        rate = rates['4hr']
+    elif duration < 73:
+        uom = "Daily"
+        full_day_periods = int(duration // 24)
+        remainder_hours = duration % 24
+        rate = full_day_periods * rates['Daily']
+        if remainder_hours > 1:
+            four_hour_chunks = int(remainder_hours // settings.overage_billing_interval)
+            rate += four_hour_chunks * (rates['Daily'] / settings.daily_divisor)
+    elif duration < 169:
+        uom = "Weekly"
+        rate = rates['Weekly']
+    else:
+        uom = "4Week"
+        rate = rates['4Week']
+
+    # Return both rate and UOM
+    return rate, uom

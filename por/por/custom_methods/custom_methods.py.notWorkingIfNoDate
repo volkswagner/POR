@@ -1,0 +1,40 @@
+from datetime import datetime
+import frappe
+
+def get_por_settings():
+    # Assuming there is only one POR Settings record
+    settings = frappe.get_single('POR Settings')
+    if settings:
+        return settings
+    else:
+        frappe.throw('POR Settings not found. Please configure them in the POR Settings doctype.')
+
+def calculate_rate_and_uom(doc, method):
+    settings = get_por_settings()
+    for item in doc.items:
+        if hasattr(item, 'date_out') and hasattr(item, 'date_returned'):
+            date_out = datetime.strptime(item.date_out, '%Y-%m-%d %H:%M:%S')
+            date_returned = datetime.strptime(item.date_returned, '%Y-%m-%d %H:%M:%S')
+            duration = (date_returned - date_out).total_seconds() / 3600.0
+
+            # Example logic to set UOM and rate based on duration
+            if duration <= (4 + settings.four_hr_grace):
+                item.rate = frappe.get_value("Item Price", {"item_code": item.item_code, "uom": "4hr"}, "price_list_rate")
+                item.uom = '4hr'
+            elif duration < 73:
+                full_day_periods = int(duration // 24)
+                remainder_hours = duration % 24
+                item.rate = full_day_periods * frappe.get_value("Item Price", {"item_code": item.item_code, "uom": "Daily"}, "price_list_rate")
+                if remainder_hours > 1:
+                    four_hour_chunks = int(remainder_hours // settings.overage_billing_interval)
+                    item.rate += four_hour_chunks * (item.rate / settings.daily_divisor)
+                item.uom = 'Daily'
+            elif duration < 169:
+                item.rate = frappe.get_value("Item Price", {"item_code": item.item_code, "uom": "Weekly"}, "price_list_rate")
+                item.uom = 'Weekly'
+            else:
+                item.rate = frappe.get_value("Item Price", {"item_code": item.item_code, "uom": "4Week"}, "price_list_rate")
+                item.uom = '4Week'
+
+    # Optional: if you modify document-level fields or need to recalculate taxes, discounts, etc.
+    doc.calculate_taxes_and_totals()

@@ -12,6 +12,11 @@ app_license = "MIT"
 # app_include_css = "/assets/por/css/por.css"
 # app_include_js = "/assets/por/js/por.js"
 
+#commenting out in favor of UOM/QTY solution eric
+#app_include_js = "/assets/por/js/custom_script.js"
+
+#from por.por.custom_methods.custom_methods import custom_sales_invoice_validate
+
 # include js, css files in header of web template
 # web_include_css = "/assets/por/css/por.css"
 # web_include_js = "/assets/por/js/por.js"
@@ -124,25 +129,15 @@ app_license = "MIT"
 # 	}
 # }
 
-doc_events = {
-    "Sales Invoice": {
-        "validate": "por.por.custom_methods.custom_methods.calculate_rate_and_uom",
-        "on_update_after_submit": "por.por.custom_methods.custom_methods.calculate_rate_and_uom"
-    },
+# commenting out in favor of server script using UOM/QTY
+#doc_events = {
+#    "Sales Invoice": {
+#        "validate": "por.por.custom_methods.custom_methods.custom_sales_invoice_validate"
+#    }
+#}
 
-    "POR Settings": {
-        "validate": "por.por.doctype.por_settings.por_settings.calculate_daily_divisor"
-    }
-}
 
-fixtures = [
-    {
-        "dt":"Custom Field",
-        "filters": [
-            ["module", "=", "POR"]
-        ]
-    }
-]
+
 
 # Scheduled Tasks
 # ---------------

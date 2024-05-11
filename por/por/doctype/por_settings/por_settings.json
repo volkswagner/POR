@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2024-04-18 10:14:57.793466",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "four_hr_grace",
+  "overage_billing_interval",
+  "daily_divisor",
+  "daily_grace",
+  "dur_daily_grace"
+ ],
+ "fields": [
+  {
+   "fieldname": "four_hr_grace",
+   "fieldtype": "Float",
+   "label": "4hr Grace Period"
+  },
+  {
+   "fieldname": "overage_billing_interval",
+   "fieldtype": "Int",
+   "label": "Overage Billing Interval"
+  },
+  {
+   "fieldname": "daily_divisor",
+   "fieldtype": "Float",
+   "label": "Daily Divisor",
+   "non_negative": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "daily_grace",
+   "fieldtype": "Float",
+   "label": "Daily Grace Period"
+  },
+  {
+   "fieldname": "dur_daily_grace",
+   "fieldtype": "Duration",
+   "label": "Daily Grace Period (Duration)"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-04-25 08:58:02.490841",
+ "modified_by": "Administrator",
+ "module": "POR",
+ "name": "POR Settings",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
